@@ -26,4 +26,5 @@ To start the AirBnB clone console, follow these steps:
 - all <optional-class-name>: Lists all instances of a particular class or all classes if no class name is provided.
 - quit or EOF: Exits the console.
 
-- Contributors:`Obi`[https://github.com/obithelight] and `Neo Mathe`[https://github.com/Oblique000]
+### Contributors:
+[`Obi`](https://github.com/obithelight) and [`Neo Mathe`](https://github.com/Oblique000)
