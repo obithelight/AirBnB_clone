@@ -37,7 +37,7 @@ class BaseModel:
     def save(self):
         ''' Updates the public instance attribute '''
         self.updated_at = datetime.now()
-        models.storage.save(self)
+        models.storage.save()
 
     def to_dict(self):
         '''
@@ -48,3 +48,4 @@ class BaseModel:
         dict_copy["__class__"] = self.__class__.__name__
         dict_copy["created_at"] = self.created_at.isoformat()
         dict_copy["updated_at"] = self.updated_at.isoformat()
+        return dict_copy
