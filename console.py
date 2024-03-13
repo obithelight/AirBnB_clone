@@ -1,4 +1,6 @@
 #!/usr/bin/python3
+""" A Python module for HBHBCommand class """
+
 import cmd
 from models.base_model import BaseModel
 from models import storage
@@ -9,154 +11,152 @@ from models.amenity import Amenity
 from models.place import Place
 from models.review import Review
 
+
+classes = ["BaseModel", "User", "State", "City", "Amenity", "Place", "Review"]
+
+
 class HBNBCommand(cmd.Cmd):
-
+    """Defines the entry point of the command interpreter"""
     prompt = "(hbnb) "
-    __classes = ["BaseModel",
-                 "User",
-                 "State",
-                 "City",
-                 "Amenity",
-                 "Place",
-                 "Review"
-                 ]
 
-    def do_quit(self, arg):
+    def do_quit(self, line):
         """Quit command to exit the program
         """
         return True
 
-    def do_EOF(self, arg):
-        """EOF signal to exit the program
+    def do_EOF(self, line):
+        """Exits the program with EOF
         """
         return True
 
     def emptyline(self):
-        return
+        """Defines what happens when the `Enter` key is pressed
+        """
+        pass
 
-    def do_create(self, arg):
-        args = arg.split()
-
+    def do_create(self, args):
+        """Creates a new instance of BaseModel, saves it (to the JSON file)
+        and prints the id
+        """
+        args = args.split()
         if len(args) == 0:
             print("** class name missing **")
-        elif args[0] not in self.__classes:
+        elif args[0] not in classes:
             print("** class doesn't exist **")
         else:
-            new_object = eval(f"{args[0]}")()
-            print(new_object.id)
-        storage.save()
+            instance = eval(args[0])()
+            instance.save()
+            print(instance.id)
 
-    def do_show(self, arg):
-        args = arg.split()
-
+    def do_show(self, args):
+        """Prints the string representation of an instance based on the
+            class name and id
+        """
+        args = args.split()
         if len(args) == 0:
             print("** class name missing **")
-        elif args[0] not in self.__classes:
+        elif args[0] not in classes:
             print("** class doesn't exist **")
         elif len(args) == 1:
             print("** instance id missing **")
-        elif f"{args[0]}.{args[1]}" not in storage.all():
-            print("** no instance found **")
         else:
-            print(storage.all()[f"{args[0]}.{args[1]}"])
+            instance_key = f'{args[0]}.{args[1]}'
+            if instance_key not in storage.all():
+                print("** no instance found **")
+            else:
+                print(storage.all()[instance_key])
 
-    def do_destroy(self, arg):
-        args = arg.split()
-
+    def do_destroy(self, args):
+        """Deletes an instance based on the class name and id
+        """
+        args = args.split()
         if len(args) == 0:
             print("** class name missing **")
-        elif args[0] not in self.__classes:
+        elif args[0] not in classes:
             print("** class doesn't exist **")
         elif len(args) == 1:
             print("** instance id missing **")
-        elif f"{args[0]}.{args[1]}" not in storage.all():
-            print("** no instance found **")
         else:
-            del storage.all()[f"{args[0]}.{args[1]}"]
-        storage.save()
+            instance_key = f'{args[0]}.{args[1]}'
+            if instance_key not in storage.all():
+                print("** no instance found **")
+            else:
+                del(storage.all()[instance_key])
+                storage.save()
 
-    def do_all(self, arg):
-        args = arg.split()
-
+    def do_all(self, args):
+        """Prints all string representation of all instances based or
+            not on the class name
+        """
+        args = args.split()
         if len(args) == 0:
-            print([str(value) for value in storage.all().values()])
-        elif args[0] not in self.__classes:
+            for obj in storage.all().values():
+                print(obj)
+        elif args[0] not in classes:
             print("** class doesn't exist **")
         else:
-            print([str(v) for k, v in storage.all().items() if k.startswith(args[0])])
+            for key in storage.all():
+                if key.startswith(args[0]):
+                    print(storage.all()[key])
 
-    def do_update(self, arg):
-        args = arg.split()
-
+    def do_update(self, args):
+        """Updates an instance based on the class name and id
+        by adding or updating attribute
+        """
+        args = args.split()
         if len(args) == 0:
             print("** class name missing **")
-        elif args[0] not in self.__classes:
+        elif args[0] not in classes:
             print("** class doesn't exist **")
         elif len(args) == 1:
             print("** instance id missing **")
-        elif f"{args[0]}.{args[1]}" not in storage.all():
-            print("** no instance found **")
         elif len(args) == 2:
             print("** attribute name missing **")
         elif len(args) == 3:
             print("** value missing **")
         else:
-            obj_class = args[0]
-            obj_id = args[1]
-            obj_key = obj_class + "." + obj_id
-            obj = storage.all()[obj_key]
-
-            attr_name = args[2]
-            attr_value = args[3]
-
-            if attr_value[0] == '"':
-                attr_value = attr_value[1:-1]
-
-            if hasattr(obj, attr_name):
-                type_ = type(getattr(obj, attr_name))
-                if type_ in [str, float, int]:
-                    attr_value = type_(attr_value)
-                    setattr(obj, attr_name, attr_value)
+            instance_key = f'{args[0]}.{args[1]}'
+            if instance_key not in storage.all():
+                print("** no instance found **")
             else:
-                setattr(obj, attr_name, attr_value)
-            storage.save()
+                obj = storage.all()[instance_key]
+                try:
+                    setattr(obj, args[2], eval(args[3]))
+                except NameError:
+                    setattr(obj, args[2], args[3])
+                obj.save()
 
     def default(self, arg):
+        "Defines any other command"
         args = arg.split('.')
-        if args[0] in self.__classes:
+        if args[0] in classes:
             if args[1] == "all()":
                 self.do_all(args[0])
             elif args[1] == "count()":
-                list_ = [v for k, v in storage.all().items() if k.startswith(args[0])]
-                print(len(list_))
+                count = 0
+                for key in storage.all():
+                    if key.startswith(args[0]):
+                        count += 1
+                print(count)
             elif args[1].startswith("show"):
-                id_ = args[1].split('"')[1]
-                self.do_show(f"{args[0]} {id_}")
+                uuid = eval(args[1].strip("show()"))
+                self.do_show(f"{args[0]} {uuid}")
             elif args[1].startswith("destroy"):
-                id_ = args[1].split('"')[1]
-                self.do_destroy(f"{args[0]} {id_}")
+                uuid = eval(args[1].strip("destroy()"))
+                self.do_destroy(f"{args[0]} {uuid}")
             elif args[1].startswith("update"):
-                split_ = args[1].split('(')
-                split_ = split_[1].split(')')
-                if '{' in split_[0]:
-                    # if a dictionary is passed
-                    split_ = split_[0].split(", {")
-                    id_ = split_[0].strip('"')
-                    dict_ = '{' + split_[1]
-                    dict_ = (eval(dict_))
-
-                    for k, v in dict_.items():
-                        self.do_update(f"{args[0]} {id_} {k} {v}")
+                if args[1].endswith("})"):
+                    entry = args[1].strip("update()").strip("}").split(", {")
+                    uuid = eval(entry[0])
+                    dictionary = eval('{' + entry[1] + '}')
+                    for name, value in dictionary.items():
+                        self.do_update(f"{args[0]} {uuid} {name} {value}")
                 else:
-                    # if not a dictionary is passed
-                    split_ = split_[0].split(', ')
-                
-                    id_ = split_[0].strip('"')
-                
-                    attr_name = split_[1].strip('"')
-                    attr_value = split_[2].strip('"')
-                
-                    self.do_update(f"{args[0]} {id_} {attr_name} {attr_value}")
+                    entry = args[1].strip("update()").split(", ")
+                    uuid = eval(entry[0])
+                    name = eval(entry[1])
+                    value = entry[2]
+                    self.do_update(f"{args[0]} {uuid} {name} {value}")
 
 
 if __name__ == '__main__':
