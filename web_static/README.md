@@ -7,7 +7,7 @@
 ## How to create an HTML page?
 - To create an HTML page, you need a basic text editor such as Notepad on Windows or TextEdit on macOS. Here's a simple example of an HTML page:
 
-`<!DOCTYPE html>
+<!DOCTYPE html>
 <html>
 <head>
     <title>My First HTML Page</title>
@@ -16,7 +16,7 @@
     <h1>Hello, World!</h1>
     <p>This is a paragraph.</p>
 </body>
-</html>`
+</html>
 
 ## What is a markup language?
 - A markup language is a system for annotating a document in a way that is syntactically distinguishable from the text. It is used to define elements and their attributes within a document to provide structure and formatting.
