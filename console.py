@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 """ A Python module for HBHBCommand class """
 
+
 import cmd
 # from models.base_model import BaseModel
 from models import storage
@@ -12,7 +13,9 @@ from models import storage
 # from models.review import Review
 
 
+
 classes = ["BaseModel", "User", "State", "City", "Amenity", "Place", "Review"]
+
 
 
 class HBNBCommand(cmd.Cmd):
