@@ -2,14 +2,14 @@
 """ A Python module for HBHBCommand class """
 
 import cmd
-from models.base_model import BaseModel
+# from models.base_model import BaseModel
 from models import storage
-from models.user import User
-from models.state import State
-from models.city import City
-from models.amenity import Amenity
-from models.place import Place
-from models.review import Review
+# from models.user import User
+# from models.state import State
+# from models.city import City
+# from models.amenity import Amenity
+# from models.place import Place
+# from models.review import Review
 
 
 classes = ["BaseModel", "User", "State", "City", "Amenity", "Place", "Review"]
@@ -81,7 +81,7 @@ class HBNBCommand(cmd.Cmd):
             if instance_key not in storage.all():
                 print("** no instance found **")
             else:
-                del(storage.all()[instance_key])
+                del (storage.all()[instance_key])
                 storage.save()
 
     def do_all(self, args):
